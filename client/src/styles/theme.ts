@@ -8,6 +8,7 @@ const Theme = {
   colorLight: '#ffe7aa',
   colorExtraLight: '#EBE9E9',
   textWhite: '#fff',
+  textLight: '#637282',
   textBlack: '#000000',
   gradientPrimary:
     'linear-gradient(146deg, #058ED9 40%, #44CFCB 100%) no-repeat 50% 50% / 100% 100%',

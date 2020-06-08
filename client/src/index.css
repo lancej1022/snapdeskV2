@@ -1,6 +1,12 @@
 html {
   /* Makes it so that 1rem = 10px for Quick Mafs */
   font-size: 62.5%;
+  box-sizing: border-box;
+}
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
 }
 
 body {
@@ -13,6 +19,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+p {
+  line-height: 2.6rem;
+  color: #000000;
 }
