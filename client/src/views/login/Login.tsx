@@ -4,9 +4,11 @@ import styled from 'styled-components';
 import LoginForm from '../../components/loginForm';
 
 const LoginContainer = styled.main`
-  display: grid;
-  grid-template-columns: 4fr 2fr;
-  height: 100vh;
+  @media screen and (min-width: ${(props) => props.theme.breakpointTablet}) {
+    display: grid;
+    grid-template-columns: 4fr 2fr;
+    height: 100vh;
+  }
 `;
 
 const LeftHero = styled.section`
@@ -26,10 +28,21 @@ const LeftHero = styled.section`
   }
 
   h2 {
-    font-size: 7.5rem;
-    line-height: 8rem;
-    margin-top: 0;
-    margin-bottom: 5rem;
+    font-size: 3rem;
+
+    @media screen and (min-width: ${(props) => props.theme.breakpointTablet}) {
+      font-size: 4.5rem;
+      line-height: 5rem;
+      margin-top: 0;
+      margin-bottom: 3rem;
+    }
+
+    @media screen and (min-width: ${(props) => props.theme.breakpointDesktop}) {
+      font-size: 7.5rem;
+      line-height: 8rem;
+      margin-top: 0;
+      margin-bottom: 5rem;
+    }
   }
 
   p {

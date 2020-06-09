@@ -29,7 +29,7 @@ const Button = styled.button<Buttonprops>`
   border: 1px solid #d0d0d3;
 
   div {
-    display: inline;
+    display: inline-block;
     padding-left: 3rem;
     background-image: ${({ logoUrl }) => `url(${logoUrl})`};
     background-repeat: no-repeat;
