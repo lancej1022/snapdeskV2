@@ -7,6 +7,7 @@ import {
   Field,
   Ctx,
   UseMiddleware,
+  Int,
 } from 'type-graphql';
 import { hash, compare } from 'bcrypt';
 import { User } from './entity/User';
@@ -14,6 +15,7 @@ import { MyContext } from './MyContext';
 import { createRefreshToken, createAccessToken } from './middleware/auth';
 import { sendRefreshToken } from './middleware/sendRefreshToken';
 import { isAuth } from './middleware/isAuth';
+import { getConnection } from 'typeorm';
 
 @ObjectType()
 class LoginResponse {
@@ -70,6 +72,19 @@ export class UserResolver {
       console.log(err);
       return false;
     }
+    return true;
+  }
+
+  /**
+   * THIS SHOULD BE extracted to another function later, rather than exposing it to the client
+   * basically its used to increment the tokenVersion we have in our db, which will cause older tokens to mismatch
+   */
+  @Mutation(() => Boolean)
+  async revokeRefreshTokenForUser(@Arg('userId', () => Int) userId: number) {
+    await getConnection()
+      .getRepository(User)
+      .increment({ id: userId }, 'tokenVersion', 1);
+
     return true;
   }
 

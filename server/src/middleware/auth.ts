@@ -8,8 +8,13 @@ export const createAccessToken = (user: User) => {
   });
 };
 
+// we use a token version to invalidate old tokens for a user, so we can just increment each new token's version
 export const createRefreshToken = (user: User) => {
-  return sign({ userId: user.id }, process.env.REFRESH_TOKEN_SECRET!, {
-    expiresIn: '7d',
-  });
+  return sign(
+    { userId: user.id, tokenVersion: user.tokenVersion },
+    process.env.REFRESH_TOKEN_SECRET!,
+    {
+      expiresIn: '7d',
+    }
+  );
 };

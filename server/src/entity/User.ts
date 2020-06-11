@@ -28,4 +28,8 @@ export class User extends BaseEntity {
   // note that we're not interested in exposing the password, so it has no Field for our Type
   @Column()
   password: string;
+
+  // whenever we create a token, pass in the version of the token
+  @Column('int', { default: 0 })
+  tokenVersion: number;
 }
