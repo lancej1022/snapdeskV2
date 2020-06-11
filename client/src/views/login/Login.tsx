@@ -1,7 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useQuery } from '@apollo/react-hooks';
-import { gql } from 'apollo-boost';
 
 import LoginForm from '../../components/loginForm';
 

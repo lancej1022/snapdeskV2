@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import SignUp from './SignUp';
 import Button from '../button';
@@ -26,20 +26,32 @@ const LoginContainer = styled.section`
   }
 `;
 
-const LoginForm: React.FC = () => {
+interface LoginFormProps {
+  isLoggedIn?: boolean;
+}
+
+const LoginForm: React.FC<LoginFormProps> = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const handleClick = () => {
+    setIsLoggedIn(!isLoggedIn);
+  };
+
   return (
     <LoginContainer>
       <div>
-        <h2>Sign In</h2>
+        <h2>{isLoggedIn ? 'Sign In' : 'Sign Up'}</h2>
         <p>
-          or <span>click here to sign up</span>
+          or&nbsp;
+          <span onClick={handleClick}>
+            click here to {isLoggedIn ? 'sign up' : 'sign in'}
+          </span>
         </p>
-        <SignUp />
+        <SignUp isLoggedIn={isLoggedIn} />
         <Button logoUrl={'/Google-G-logo.svg'}>
-          <div>Sign in with Google</div>
+          <div>{isLoggedIn ? 'Sign in' : 'Sign up'} with Google</div>
         </Button>
         <Button logoUrl={'/github-logo.svg'}>
-          <div>Sign in with GitHub</div>
+          <div>{isLoggedIn ? 'Sign in' : 'Sign up'} with GitHub</div>
         </Button>
       </div>
     </LoginContainer>

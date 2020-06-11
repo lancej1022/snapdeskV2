@@ -1,6 +1,9 @@
-import React, { useState, useEffect, SyntheticEvent } from 'react';
+import React, { useState, SyntheticEvent } from 'react';
 import styled from 'styled-components';
 import Button from '../button';
+import { useRegisterMutation, useLoginMutation } from '../../generated/graphql';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { setAccessToken } from '../../accessToken';
 
 const Input = styled.input`
   border: 1px solid #d0d0d3;
@@ -35,13 +38,42 @@ const SignUpForm = styled.form`
   }
 `;
 
-const SignUp: React.FC = () => {
+interface SignUpProps extends RouteComponentProps {
+  isLoggedIn?: boolean;
+}
+
+const SignUp: React.FC<SignUpProps> = ({ isLoggedIn = false, history }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [register] = useRegisterMutation();
+  const [login] = useLoginMutation();
 
-  const handleSubmit = (e: SyntheticEvent) => {
+  const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
-    console.log(email, password);
+    let response;
+    // fire our register GQL query and await the response
+    if (!isLoggedIn) {
+      response = await register({
+        variables: {
+          email,
+          password,
+        },
+      });
+    } else {
+      response = await login({
+        variables: {
+          email,
+          password,
+        },
+      });
+
+      if (response && response.data) {
+        setAccessToken(response.data.login.accessToken);
+      }
+      history.push('/home');
+    }
+
+    console.log(response);
   };
 
   return (
@@ -69,28 +101,37 @@ const SignUp: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
           ></Input>
         </div>
-        <p>
-          This page is protected by reCAPTCHA, and subject to the Google&nbsp;
-          <a href="https://policies.google.com/privacy" target="_blank">
-            Privacy Policy
-          </a>
-          &nbsp;and&nbsp;
-          <a href="https://policies.google.com/terms" target="_blank">
-            Terms of service
-          </a>
-          .
-        </p>
         <Button
           type="submit"
           buttonColor={(props: any) => props.theme.colorPrimary}
           textColor={(props: any) => props.theme.textWhite}
           border={'false'}
         >
-          Sign In
+          {isLoggedIn ? 'Sign In' : 'Sign Up'}
         </Button>
+        <p>
+          This page is protected by reCAPTCHA, and subject to the Google&nbsp;
+          <a
+            href="https://policies.google.com/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Privacy Policy
+          </a>
+          &nbsp;and&nbsp;
+          <a
+            href="https://policies.google.com/terms"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Terms of service
+          </a>
+          .
+        </p>
       </SignUpForm>
     </>
   );
 };
 
-export default SignUp;
+// we have to wrap it in 'withRouter' HOC in order to get the history prop
+export default withRouter(SignUp);
