@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import 'reflect-metadata';
 import express from 'express';
+import cors from 'cors';
 import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
 import { createConnection } from 'typeorm';
@@ -17,6 +18,12 @@ const PORT = process.env.port || 4000;
 // Lambda / IIFE so that we can write an async function that starts itself
 (async () => {
   const app = express();
+  app.use(
+    cors({
+      origin: process.env.origin || 'http://localhost:3000',
+      credentials: true,
+    })
+  );
 
   app.use(cookieParser());
 
@@ -62,8 +69,9 @@ const PORT = process.env.port || 4000;
 
   /**
    * Generate our gql server here
+   * We set CORS to false because we need to set our own
    */
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({ app, cors: false });
 
   app.listen(PORT, () => {
     console.log('express server started');
