@@ -1,7 +1,12 @@
 import React, { useState, SyntheticEvent } from 'react';
 import styled from 'styled-components';
 import Button from '../button';
-import { useRegisterMutation, useLoginMutation } from '../../generated/graphql';
+import {
+  useRegisterMutation,
+  useLoginMutation,
+  MeDocument,
+  MeQuery,
+} from '../../generated/graphql';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { setAccessToken } from '../../accessToken';
 
@@ -64,6 +69,16 @@ const SignUp: React.FC<SignUpProps> = ({ isLoggedIn = false, history }) => {
         variables: {
           email,
           password,
+        },
+        update: (store, { data }) => {
+          if (!data) return null;
+          store.writeQuery<MeQuery>({
+            query: MeDocument,
+            data: {
+              // __typename: 'Query',
+              me: data.login.user,
+            },
+          });
         },
       });
 
