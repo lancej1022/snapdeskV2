@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import LoginForm from '../../components/loginForm';
-import { useMeQuery } from '../../generated/graphql';
+// import { useMeQuery } from '../../generated/graphql';
 
 const LoginContainer = styled.main`
   @media screen and (min-width: ${(props) => props.theme.breakpointTablet}) {
@@ -58,7 +58,7 @@ const Login: React.FC = () => {
   // const { data } = useMeQuery({ fetchPolicy: 'network-only' });
 
   // the below code is for prod, where we let apollo cache our data
-  const { data } = useMeQuery();
+  // const { data } = useMeQuery();
 
   return (
     <LoginContainer>
