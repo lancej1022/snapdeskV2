@@ -13,7 +13,9 @@ const LoginContainer = styled.main`
 `;
 
 const LeftHero = styled.section`
-  background-color: ${(props) => props.theme.colorDark};
+  background: linear-gradient(rgba(13, 47, 129, 0.82), rgba(13, 47, 129, 0.82)),
+    url('/login-bg-lg.jpg');
+  background-size: cover;
   color: ${(props) => props.theme.colorLight};
   display: grid;
   place-items: center;
