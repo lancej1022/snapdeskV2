@@ -10,17 +10,21 @@ import {
   Int,
 } from 'type-graphql';
 import { hash, compare } from 'bcrypt';
-import { User } from './entity/User';
-import { MyContext } from './MyContext';
-import { createRefreshToken, createAccessToken } from './middleware/auth';
-import { sendRefreshToken } from './middleware/sendRefreshToken';
-import { isAuth } from './middleware/isAuth';
 import { getConnection } from 'typeorm';
+import { verify } from 'jsonwebtoken';
+import { sendRefreshToken } from '../middleware/sendRefreshToken';
+import { User } from '../entity/User';
+import { MyContext } from '../MyContext';
+import { createRefreshToken, createAccessToken } from '../middleware/auth';
+
+import { isAuth } from '../middleware/isAuth';
 
 @ObjectType()
 class LoginResponse {
   @Field()
   accessToken: string;
+  @Field(() => User)
+  user: User;
 }
 
 // declare the class as a resolver
@@ -35,14 +39,33 @@ class LoginResponse {
         hello: () => 'hello world',
       },
     },
+    etc
  */
 /* eslint-disable */
 @Resolver()
 export class UserResolver {
-  // the anonymous function tells the Query which TypeScript type to expect
+  // the anonymous function tells the Query which TypeScript Class to expect
   @Query(() => [User])
   users() {
     return User.find();
+  }
+
+  // query for fetching all info about the current user
+  @Query(() => User, { nullable: true })
+  me(@Ctx() context: MyContext) {
+    const authorization = context.req.headers['authorization'];
+
+    // no currently logged in user
+    if (!authorization) return null;
+
+    try {
+      const token = authorization.split(' ')[1];
+      const payload: any = verify(token, process.env.ACCESS_TOKEN_SECRET!);
+      return User.findOne(payload.userId);
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
   }
 
   @Query(() => String)
@@ -112,7 +135,15 @@ export class UserResolver {
       // in a production environment the secret should be kept in an env file
       // keep the access token short to 15mins
       accessToken: createAccessToken(user),
+      user,
     };
+  }
+  @Mutation(() => Boolean)
+  async logout(@Ctx() { res }: MyContext) {
+    // fire our refreshToken func, but pass in an empty string in order to create an invalidate token, thereby logging the user out
+    // could also do res.clearCookie but this helps preserve the shape of the cookie for the user
+    sendRefreshToken(res, '');
+    return true;
   }
 }
 /* eslint-disable */

@@ -13,11 +13,12 @@ import { ApolloLink, Observable } from 'apollo-link';
 import { TokenRefreshLink } from 'apollo-link-token-refresh';
 import jwtDecode from 'jwt-decode';
 
-import './styles/index.css';
+import './styles/index.scss';
 import store from './app/store';
 import theme from './styles/theme';
 import Login from './views/login';
 import App from './App';
+import PrivateRoute from './utils/PrivateRoute';
 import { getAccessToken, setAccessToken } from './accessToken';
 
 const cache = new InMemoryCache({});
@@ -120,9 +121,9 @@ ReactDOM.render(
               <Route exact path="/">
                 <Login />
               </Route>
-              <Route exact path="/home">
-                <App />
-              </Route>
+              <PrivateRoute isLoggedIn={true} path="/home">
+                <App isLoggedIn={true} />
+              </PrivateRoute>
             </Switch>
           </BrowserRouter>
         </ThemeProvider>

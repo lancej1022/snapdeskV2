@@ -63,6 +63,7 @@
     "@types/react-router-dom": "^5.1.5",
     "@types/styled-components": "^5.1.0",
     "jest-styled-components": "^7.0.2",
+    "node-sass": "^4.14.1",
     "typescript": "^3.9.5"
   }
 }

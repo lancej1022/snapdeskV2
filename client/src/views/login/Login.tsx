@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import LoginForm from '../../components/loginForm';
-import { useMeQuery } from '../../generated/graphql';
+// import { useMeQuery } from '../../generated/graphql';
 
 const LoginContainer = styled.main`
   @media screen and (min-width: ${(props) => props.theme.breakpointTablet}) {
@@ -13,7 +13,9 @@ const LoginContainer = styled.main`
 `;
 
 const LeftHero = styled.section`
-  background-color: ${(props) => props.theme.colorDark};
+  background: linear-gradient(rgba(13, 47, 129, 0.82), rgba(13, 47, 129, 0.82)),
+    url('/login-bg-lg.jpg');
+  background-size: cover;
   color: ${(props) => props.theme.colorLight};
   display: grid;
   place-items: center;
@@ -58,7 +60,7 @@ const Login: React.FC = () => {
   // const { data } = useMeQuery({ fetchPolicy: 'network-only' });
 
   // the below code is for prod, where we let apollo cache our data
-  const { data } = useMeQuery();
+  // const { data } = useMeQuery();
 
   return (
     <LoginContainer>

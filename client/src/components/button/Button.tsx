@@ -8,12 +8,16 @@ interface Buttonprops {
 }
 
 const Button = styled.button<Buttonprops>`
+  cursor: pointer;
   padding: 1rem;
   margin: 1rem 0;
   width: 100%;
-  background: ${({ buttonColor }) => (buttonColor ? buttonColor : 'fff')};
-  color: ${({ textColor }) => (textColor ? textColor : 'fff')};
+  /* accepts a custom background as a prop, otherwise it defaults to a white background */
+  background: ${({ buttonColor }) => (buttonColor ? buttonColor : '#fff')};
+  /* accepts a custom text color, otherwise defaults to deep black */
+  color: ${({ textColor }) => (textColor ? textColor : '#000000')};
   font-size: 1.6rem;
+  /* has default border unlesss otherwise specified */
   border: ${({ border }) => (border !== 'false' ? '1px solid #d0d0d3' : '')};
 
   div {
