@@ -12,12 +12,12 @@ import {
 import { hash, compare } from 'bcrypt';
 import { getConnection } from 'typeorm';
 import { verify } from 'jsonwebtoken';
-import { sendRefreshToken } from './middleware/sendRefreshToken';
-import { User } from './entity/User';
-import { MyContext } from './MyContext';
-import { createRefreshToken, createAccessToken } from './middleware/auth';
+import { sendRefreshToken } from '../middleware/sendRefreshToken';
+import { User } from '../entity/User';
+import { MyContext } from '../MyContext';
+import { createRefreshToken, createAccessToken } from '../middleware/auth';
 
-import { isAuth } from './middleware/isAuth';
+import { isAuth } from '../middleware/isAuth';
 
 @ObjectType()
 class LoginResponse {
@@ -39,11 +39,12 @@ class LoginResponse {
         hello: () => 'hello world',
       },
     },
+    etc
  */
 /* eslint-disable */
 @Resolver()
 export class UserResolver {
-  // the anonymous function tells the Query which TypeScript type to expect
+  // the anonymous function tells the Query which TypeScript Class to expect
   @Query(() => [User])
   users() {
     return User.find();
