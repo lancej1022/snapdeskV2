@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from 'typeorm';
-import { ObjectType, Field, Int } from 'type-graphql';
+import { ObjectType, Field, ID } from 'type-graphql';
 
 /**
  * Basically maps to a table in our database
@@ -17,12 +17,13 @@ import { ObjectType, Field, Int } from 'type-graphql';
 @ObjectType()
 @Entity('users')
 export class User extends BaseEntity {
-  @Field(() => Int)
+  @Field(() => ID)
   @PrimaryGeneratedColumn()
   id: number;
 
   @Field()
-  @Column('text')
+  // specify unique so that the columns cannot have duplicate
+  @Column('text', { unique: true })
   email: string;
 
   // note that we're not interested in exposing the password, so it has no Field for our Type
