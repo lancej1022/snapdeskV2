@@ -6,6 +6,8 @@ import React from 'react';
 import { getDataFromTree } from 'react-apollo';
 import initApollo from './initApollo';
 import { isBrowser } from './isBrowser';
+import redirect from './redirect';
+import { parse } from 'path';
 
 function parseCookies(req?: any, options = {}) {
   return cookie.parse(req ? req.headers.cookie || '' : document.cookie, options);
@@ -62,6 +64,9 @@ export default (App: any) => {
           // Handle them in components via the data.error prop:
           // https://www.apollographql.com/docs/react/api/react-apollo.html#graphql-query-data-error
           console.error('Error while running `getDataFromTree`', error);
+          if (error.message.includes('not authenticated')) {
+            redirect(ctx.ctx, '/');
+          }
         }
 
         // getDataFromTree does not call componentWillUnmount
@@ -86,6 +91,7 @@ export default (App: any) => {
       // After that rendering is done using Next's normal rendering pipeline
       this.apolloClient = initApollo(props.apolloState, {
         getToken: () => {
+          console.log(parseCookies());
           return parseCookies().token;
         },
       });
