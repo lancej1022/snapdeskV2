@@ -12,12 +12,13 @@ import {
 import { hash, compare } from 'bcrypt';
 import { getConnection } from 'typeorm';
 import { verify } from 'jsonwebtoken';
-import { sendRefreshToken } from '../middleware/sendRefreshToken';
-import { User } from '../entity/User';
-import { MyContext } from '../MyContext';
-import { createRefreshToken, createAccessToken } from '../middleware/auth';
+import { sendRefreshToken } from '../../middleware/sendRefreshToken';
+import { User } from '../../entity/User';
+import { MyContext } from '../../types/MyContext';
+import { createRefreshToken, createAccessToken } from '../../middleware/auth';
 
-import { isAuth } from '../middleware/isAuth';
+import { isAuth } from '../../middleware/isAuth';
+import { RegisterInput } from './register/RegisterInput';
 
 @ObjectType()
 class LoginResponse {
@@ -45,10 +46,10 @@ class LoginResponse {
 @Resolver()
 export class UserResolver {
   // the anonymous function tells the Query which TypeScript Class to expect
-  @Query(() => [User])
-  users() {
-    return User.find();
-  }
+  // @Query(() => [User])
+  // users() {
+  //   return User.find();
+  // }
 
   // query for fetching all info about the current user
   @Query(() => User, { nullable: true })
@@ -76,26 +77,17 @@ export class UserResolver {
   }
 
   // the anon function specifies that we will return the TS type "Boolean"
-  @Mutation(() => Boolean)
-  async register(
-    // format: the name of the graphql argument (aka what the client would send), the variable name, the TypeScript type
-    // unlike in the query, we're letting TypeGrapghql infer the type of the argument rather than specifying: ('email', () => String)
-    @Arg('email') email: string,
-    @Arg('password') password: string
-  ) {
+  @Mutation(() => User)
+  async register(@Arg('data') { email, password }: RegisterInput): Promise<User> {
     // hash the user's password with 12 rounds for the salt
     const hashedPass = await hash(password, 12);
-    // inserts the user to the database
-    try {
-      await User.insert({
-        email,
-        password: hashedPass,
-      });
-    } catch (err) {
-      console.log(err);
-      return false;
-    }
-    return true;
+
+    const user = await User.create({
+      email,
+      password: hashedPass,
+    }).save();
+
+    return user;
   }
 
   /**
@@ -111,29 +103,27 @@ export class UserResolver {
     return true;
   }
 
-  @Mutation(() => LoginResponse)
+  @Mutation(() => LoginResponse, { nullable: true })
   async login(
     @Arg('email') email: string,
     @Arg('password') password: string,
     // Ctx stands for Context (from graphql)
     @Ctx() { res }: MyContext
-  ): Promise<LoginResponse> {
+  ): Promise<LoginResponse | null> {
     // find user by email
     const user = await User.findOne({ where: { email } });
 
-    if (!user) throw new Error('could not find user');
+    // if we dont find a user, simply return null rather than revealing the reason for the error
+    if (!user) return null;
 
     const valid = await compare(password, user.password);
-    if (!valid) throw new Error('password did not match');
+    // if password doesn't match, return null rather than revealing any errors
+    if (!valid) return null;
 
     // login was successful, so create a refreshToken
-    // jid basically means json ID, but its generic so that clients ideally cant tell what it is
     sendRefreshToken(res, createRefreshToken(user));
 
     return {
-      // first arg: payload we want to turn into jwt, second arg = secret key
-      // in a production environment the secret should be kept in an env file
-      // keep the access token short to 15mins
       accessToken: createAccessToken(user),
       user,
     };

@@ -3,14 +3,12 @@ import 'reflect-metadata';
 import express from 'express';
 import cors from 'cors';
 import { ApolloServer } from 'apollo-server-express';
-import { buildSchema } from 'type-graphql';
 import { createConnection } from 'typeorm';
 import cookieParser from 'cookie-parser';
-
 import { verify } from 'jsonwebtoken';
-import { UserResolver } from './resolvers/UserResolver';
-import { User } from './entity/User';
 
+import { User } from './entity/User';
+import { createSchema } from './createSchema';
 import { createRefreshToken, createAccessToken } from './middleware/auth';
 import { sendRefreshToken } from './middleware/sendRefreshToken';
 
@@ -18,23 +16,17 @@ const PORT = process.env.port || 4000;
 
 // Lambda / IIFE so that we can write an async function that starts itself
 const main = async () => {
-  /**
-   * Define our GraphQL stuff here
-   */
+  // connect to PG database
+  await createConnection();
+
+  const schema = await createSchema();
+
   const apolloServer = new ApolloServer({
-    schema: await buildSchema({
-      resolvers: [UserResolver],
-    }),
+    schema,
     context: ({ req, res }) => ({ req, res }),
   });
 
   const app = express();
-
-  /**
-   * Generate our gql server here
-   * We set CORS to false because we need to set our own
-   */
-  apolloServer.applyMiddleware({ app, cors: false });
 
   app.use(
     cors({
@@ -73,11 +65,17 @@ const main = async () => {
     return res.send({ ok: true, accessToken: createAccessToken(user) });
   });
 
-  await createConnection();
+  /**
+   * Generate our gql + express  server here
+   * We set CORS to false because we need to set our own otherwise apollo freaks out
+   * Note that this bit of code must be one of the last things inside of main()
+   * otherwise we may get cors errors
+   */
+  apolloServer.applyMiddleware({ app, cors: false });
 
   app.listen(PORT, () => {
     console.log('express server started');
   });
 };
 
-main();
+main().catch((err) => console.error(err));
