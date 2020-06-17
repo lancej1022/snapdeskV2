@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import {
   useRegisterMutation,
@@ -8,6 +8,7 @@ import {
 import { useRouter } from 'next/router';
 import * as Yup from 'yup';
 import { Formik, Field } from 'formik';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 import Button from '../button';
 import { setAccessToken } from '../../lib/accessToken';
@@ -45,6 +46,8 @@ const SignUpForm = styled.form`
   }
 `;
 
+const recaptchaRef: React.RefObject<ReCAPTCHA> = React.createRef();
+
 /////
 // Formik
 /////
@@ -70,6 +73,7 @@ interface SignUpProps {
 const SignUp: React.FC<SignUpProps> = ({ isLoggedIn = false }) => {
   const [register] = useRegisterMutation();
   const [login] = useLoginMutation();
+  const [recaptchaToken, setToken] = useState('');
   // const [findMe] = useMeQuery();
   const router = useRouter();
 
@@ -80,8 +84,26 @@ const SignUp: React.FC<SignUpProps> = ({ isLoggedIn = false }) => {
           variables: {
             data,
           },
+          update: (cache, { data }) => {
+            if (!data || !data.login) {
+              return;
+            }
+
+            cache.writeQuery<MeQuery>({
+              query: meQuery,
+              data: {
+                __typename: 'Query',
+                me: data.login,
+              },
+            });
+          },
         });
-        console.log(response);
+
+        if (response && response.data && response.data.login) {
+          console.log(response.data.login.accessToken);
+          setAccessToken(response.data.login.accessToken);
+        }
+        router.push('/home');
       } catch (err) {
         // this console log was used to see which keys/values we had access to during an error
         // console.log('err:', Object.entries(err));
@@ -132,6 +154,10 @@ const SignUp: React.FC<SignUpProps> = ({ isLoggedIn = false }) => {
     }
   };
 
+  useEffect(() => {
+    recaptchaRef.current && recaptchaRef.current.reset();
+  }, []);
+
   return (
     <>
       <Formik
@@ -171,7 +197,7 @@ const SignUp: React.FC<SignUpProps> = ({ isLoggedIn = false }) => {
             </Button>
 
             <p>
-              This page is protected by reCAPTCHA, and subject to the Google&nbsp;
+              {/* This page is protected by reCAPTCHA, and subject to the Google&nbsp;
               <a
                 href="https://policies.google.com/privacy"
                 target="_blank"
@@ -187,7 +213,8 @@ const SignUp: React.FC<SignUpProps> = ({ isLoggedIn = false }) => {
               >
                 Terms of service
               </a>
-              .
+              . */}
+              We recommend signing in with GitHub for maximum security.
             </p>
           </SignUpForm>
         )}
@@ -196,5 +223,4 @@ const SignUp: React.FC<SignUpProps> = ({ isLoggedIn = false }) => {
   );
 };
 
-// we have to wrap it in 'withRouter' HOC in order to get the history prop
 export default SignUp;

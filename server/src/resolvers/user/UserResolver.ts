@@ -42,15 +42,10 @@ class LoginResponse {
     },
     etc
  */
+
 /* eslint-disable */
 @Resolver()
 export class UserResolver {
-  // the anonymous function tells the Query which TypeScript Class to expect
-  // @Query(() => [User])
-  // users() {
-  //   return User.find();
-  // }
-
   // query for fetching all info about the current user
   @Query(() => User, { nullable: true })
   me(@Ctx() context: MyContext) {
@@ -77,8 +72,11 @@ export class UserResolver {
   }
 
   // the anon function specifies that we will return the TS type "Boolean"
-  @Mutation(() => User)
-  async register(@Arg('data') { email, password }: RegisterInput): Promise<User> {
+  @Mutation(() => LoginResponse)
+  async register(
+    @Arg('data') { email, password }: RegisterInput,
+    @Ctx() { res }: MyContext
+  ): Promise<LoginResponse> {
     // hash the user's password with 12 rounds for the salt
     const hashedPass = await hash(password, 12);
 
@@ -87,20 +85,14 @@ export class UserResolver {
       password: hashedPass,
     }).save();
 
-    return user;
-  }
+    // return user;
+    // login was successful, so create a refreshToken
+    sendRefreshToken(res, createRefreshToken(user));
 
-  /**
-   * THIS SHOULD BE extracted to another function later, rather than exposing it to the client
-   * basically its used to increment the tokenVersion we have in our db, which will cause older tokens to mismatch
-   */
-  @Mutation(() => Boolean)
-  async revokeRefreshTokenForUser(@Arg('userId', () => Int) userId: number) {
-    await getConnection()
-      .getRepository(User)
-      .increment({ id: userId }, 'tokenVersion', 1);
-
-    return true;
+    return {
+      accessToken: createAccessToken(user),
+      user,
+    };
   }
 
   @Mutation(() => LoginResponse, { nullable: true })
@@ -128,10 +120,24 @@ export class UserResolver {
       user,
     };
   }
+
+  /**
+   * THIS SHOULD BE extracted to another function later, rather than exposing it to the client
+   * basically its used to increment the tokenVersion we have in our db, which will cause older tokens to mismatch
+   */
+  @Mutation(() => Boolean)
+  async revokeRefreshTokenForUser(@Arg('userId', () => Int) userId: number) {
+    await getConnection()
+      .getRepository(User)
+      .increment({ id: userId }, 'tokenVersion', 1);
+
+    return true;
+  }
+
   @Mutation(() => Boolean)
   async logout(@Ctx() { res }: MyContext) {
     // fire our refreshToken func, but pass in an empty string in order to create an invalidate token, thereby logging the user out
-    // could also do res.clearCookie but this helps preserve the shape of the cookie for the user
+    // could also do res.clearCookie
     sendRefreshToken(res, '');
     return true;
   }
