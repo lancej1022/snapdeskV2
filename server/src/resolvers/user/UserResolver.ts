@@ -42,15 +42,10 @@ class LoginResponse {
     },
     etc
  */
+
 /* eslint-disable */
 @Resolver()
 export class UserResolver {
-  // the anonymous function tells the Query which TypeScript Class to expect
-  // @Query(() => [User])
-  // users() {
-  //   return User.find();
-  // }
-
   // query for fetching all info about the current user
   @Query(() => User, { nullable: true })
   me(@Ctx() context: MyContext) {
@@ -90,19 +85,6 @@ export class UserResolver {
     return user;
   }
 
-  /**
-   * THIS SHOULD BE extracted to another function later, rather than exposing it to the client
-   * basically its used to increment the tokenVersion we have in our db, which will cause older tokens to mismatch
-   */
-  @Mutation(() => Boolean)
-  async revokeRefreshTokenForUser(@Arg('userId', () => Int) userId: number) {
-    await getConnection()
-      .getRepository(User)
-      .increment({ id: userId }, 'tokenVersion', 1);
-
-    return true;
-  }
-
   @Mutation(() => LoginResponse, { nullable: true })
   async login(
     @Arg('email') email: string,
@@ -128,10 +110,24 @@ export class UserResolver {
       user,
     };
   }
+
+  /**
+   * THIS SHOULD BE extracted to another function later, rather than exposing it to the client
+   * basically its used to increment the tokenVersion we have in our db, which will cause older tokens to mismatch
+   */
+  @Mutation(() => Boolean)
+  async revokeRefreshTokenForUser(@Arg('userId', () => Int) userId: number) {
+    await getConnection()
+      .getRepository(User)
+      .increment({ id: userId }, 'tokenVersion', 1);
+
+    return true;
+  }
+
   @Mutation(() => Boolean)
   async logout(@Ctx() { res }: MyContext) {
     // fire our refreshToken func, but pass in an empty string in order to create an invalidate token, thereby logging the user out
-    // could also do res.clearCookie but this helps preserve the shape of the cookie for the user
+    // could also do res.clearCookie
     sendRefreshToken(res, '');
     return true;
   }

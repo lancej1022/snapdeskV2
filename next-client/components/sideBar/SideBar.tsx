@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 
 import { useLogoutMutation } from '../../generated/apolloComponents';
 import { setAccessToken } from '../../lib/accessToken';
+import Button from '../button';
 
 const SideBarContainer = styled.section`
   background-color: ${({ theme }) => theme.colorDark};
@@ -20,20 +21,22 @@ const SideBar: React.FC = () => {
   const [logout, { client }] = useLogoutMutation();
   const router = useRouter();
 
-  // clears our refresh token
+  // clears our  token
   const handleLogout = async () => {
     await logout();
-    setAccessToken('');
     // because the client can theoretically be undefined, we tell TS to assume its g2g
     await client!.resetStore();
+    // this should work but if we start seeing graphql errors then its probably executing on the server side
+    // and so we should use our 'redirect' util in order to redirect -- redirect(ctx, '/')
     router.push('/');
+    setAccessToken('');
   };
 
   return (
     <SideBarContainer>
       <h2>SnapDesk</h2>
       {/* Show some profile stuff here */}
-      <button onClick={handleLogout}>logout</button>
+      <Button onClick={handleLogout}>logout</Button>
     </SideBarContainer>
   );
 };

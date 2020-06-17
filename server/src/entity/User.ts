@@ -27,8 +27,13 @@ export class User extends BaseEntity {
   email: string;
 
   // note that we're not interested in exposing the password, so it has no Field for our Type
-  @Column()
+  // password is set as nullable for the DB because OAuth users will not have a password
+  @Column('text', { nullable: true })
   password: string;
+
+  // optiona field if they register through github oauth
+  @Column('text', { nullable: true })
+  githubId: string | null;
 
   // whenever we create a token, pass in the version of the token
   @Column('int', { default: 0 })

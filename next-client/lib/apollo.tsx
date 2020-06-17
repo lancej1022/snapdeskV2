@@ -11,6 +11,8 @@ import { getAccessToken, setAccessToken } from './accessToken';
 import { onError } from 'apollo-link-error';
 import { ApolloLink } from 'apollo-link';
 import cookie from 'cookie';
+import redirect from './redirect';
+import Router from 'next/router';
 
 const isServer = () => typeof window === 'undefined';
 
@@ -111,6 +113,10 @@ export function withApollo(PageComponent: any, { ssr = true } = {}) {
             // Handle them in components via the data.error prop:
             // https://www.apollographql.com/docs/react/api/react-apollo.html#graphql-query-data-error
             console.error('Error while running `getDataFromTree`', error);
+            if (error.message.includes('not authenticated')) {
+              // from getInitialProps
+              redirect(ctx.ctx, '/');
+            }
           }
         }
 
@@ -120,7 +126,7 @@ export function withApollo(PageComponent: any, { ssr = true } = {}) {
       }
 
       // Extract query data from the Apollo store
-      const apolloState = apolloClient.cache.extract();
+      const apolloState = apolloClient!.cache.extract();
 
       return {
         ...pageProps,
@@ -212,9 +218,26 @@ function createApolloClient(initialState = {}, serverAccessToken?: string) {
     };
   });
 
+  // this version works for sure, but does not redirect.
+  // const errorLink = onError(({ graphQLErrors, networkError }) => {
+  //   console.log(graphQLErrors);
+
+  //   console.log(networkError);
+  // });
+
+  // this version SHOULD work, and does redirect
   const errorLink = onError(({ graphQLErrors, networkError }) => {
-    console.log(graphQLErrors);
-    console.log(networkError);
+    if (graphQLErrors)
+      graphQLErrors.map(({ message, locations, path }) => {
+        console.log(
+          `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+        );
+
+        if (!isServer && message.includes('not authenticated')) {
+          Router.replace('/');
+        }
+      });
+    if (networkError) console.log(`[Network error]: ${networkError}`);
   });
 
   return new ApolloClient({
