@@ -72,8 +72,11 @@ export class UserResolver {
   }
 
   // the anon function specifies that we will return the TS type "Boolean"
-  @Mutation(() => User)
-  async register(@Arg('data') { email, password }: RegisterInput): Promise<User> {
+  @Mutation(() => LoginResponse)
+  async register(
+    @Arg('data') { email, password }: RegisterInput,
+    @Ctx() { res }: MyContext
+  ): Promise<LoginResponse> {
     // hash the user's password with 12 rounds for the salt
     const hashedPass = await hash(password, 12);
 
@@ -82,7 +85,14 @@ export class UserResolver {
       password: hashedPass,
     }).save();
 
-    return user;
+    // return user;
+    // login was successful, so create a refreshToken
+    sendRefreshToken(res, createRefreshToken(user));
+
+    return {
+      accessToken: createAccessToken(user),
+      user,
+    };
   }
 
   @Mutation(() => LoginResponse, { nullable: true })

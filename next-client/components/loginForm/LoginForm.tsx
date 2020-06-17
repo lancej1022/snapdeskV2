@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
 import styled from 'styled-components';
 import SignUp from './SignUp';
 import Button from '../button';
@@ -32,6 +33,7 @@ interface LoginFormProps {
 
 const LoginForm: React.FC<LoginFormProps> = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   const handleClick = () => {
     setIsLoggedIn(!isLoggedIn);
   };
@@ -47,12 +49,16 @@ const LoginForm: React.FC<LoginFormProps> = () => {
           </span>
         </p>
         <SignUp isLoggedIn={isLoggedIn} />
-        <Button logoUrl={'/Google-G-logo.svg'}>
+
+        {/* <Button logoUrl={'/Google-G-logo.svg'}>
           <div>{isLoggedIn ? 'Sign in' : 'Sign up'} with Google</div>
-        </Button>
-        <Button logoUrl={'/github-logo.svg'}>
-          <div>{isLoggedIn ? 'Sign in' : 'Sign up'} with GitHub</div>
-        </Button>
+        </Button> */}
+
+        <a href="http://localhost:4000/auth/github">
+          <Button logoUrl={'/github-logo.svg'}>
+            <div>{isLoggedIn ? 'Sign in' : 'Sign up'} with GitHub</div>
+          </Button>
+        </a>
       </div>
     </LoginContainer>
   );

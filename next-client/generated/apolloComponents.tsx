@@ -30,9 +30,9 @@ export type User = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  register: User;
-  revokeRefreshTokenForUser: Scalars['Boolean'];
+  register: LoginResponse;
   login?: Maybe<LoginResponse>;
+  revokeRefreshTokenForUser: Scalars['Boolean'];
   logout: Scalars['Boolean'];
 };
 
@@ -42,25 +42,25 @@ export type MutationRegisterArgs = {
 };
 
 
-export type MutationRevokeRefreshTokenForUserArgs = {
-  userId: Scalars['Int'];
-};
-
-
 export type MutationLoginArgs = {
   password: Scalars['String'];
   email: Scalars['String'];
 };
 
-export type RegisterInput = {
-  email: Scalars['String'];
-  password: Scalars['String'];
+
+export type MutationRevokeRefreshTokenForUserArgs = {
+  userId: Scalars['Int'];
 };
 
 export type LoginResponse = {
   __typename?: 'LoginResponse';
   accessToken: Scalars['String'];
   user: User;
+};
+
+export type RegisterInput = {
+  email: Scalars['String'];
+  password: Scalars['String'];
 };
 
 export type LoginMutationVariables = Exact<{
@@ -97,8 +97,12 @@ export type RegisterMutationVariables = Exact<{
 export type RegisterMutation = (
   { __typename?: 'Mutation' }
   & { register: (
-    { __typename?: 'User' }
-    & Pick<User, 'id' | 'email'>
+    { __typename?: 'LoginResponse' }
+    & Pick<LoginResponse, 'accessToken'>
+    & { user: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'email'>
+    ) }
   ) }
 );
 
@@ -229,8 +233,11 @@ export type LogoutMutationOptions = ApolloReactCommon.BaseMutationOptions<Logout
 export const RegisterDocument = gql`
     mutation Register($data: RegisterInput!) {
   register(data: $data) {
-    id
-    email
+    accessToken
+    user {
+      id
+      email
+    }
   }
 }
     `;
