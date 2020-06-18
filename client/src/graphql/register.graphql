@@ -1,5 +1,0 @@
-mutation Register($email: String!, $password: String!) {
-  register(data: { email: $email, password: $password }) {
-    email
-  }
-}
