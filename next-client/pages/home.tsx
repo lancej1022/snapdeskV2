@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import { useByeQuery } from '../generated/apolloComponents';
 
 import SideBar from '../components/sideBar';
-import LeaderBoard from '../components/leaderBoard';
+import FeedContainer from '../components/feedContainer';
 import TicketCreator from '../components/ticketCreator';
 
 const HomeContainer = styled.main`
@@ -15,24 +15,25 @@ const HomeContainer = styled.main`
 `;
 
 const Home = () => {
-  const { data, loading, error } = useByeQuery();
+  // const { data, loading, error } = useByeQuery();
   const router = useRouter();
 
-  if (loading) return <div>loading...</div>;
-  if (error) {
-    window.alert('Your session has timed out');
-    router.push('/');
-  }
-  if (!data) return <div>no data...</div>;
+  // if (loading) return <div>loading...</div>;
+  // if (error) {
+  //   window.alert('Your session has timed out');
+  //   router.push('/');
+  // }
+  // if (!data) return <div>no data...</div>;
 
   return (
     <HomeContainer>
       <SideBar />
-      <div>
+      {/* <div>
         hello
         <div>{data.bye}</div>
         <TicketCreator />
-      </div>
+      </div> */}
+      <FeedContainer />
       {/* <LeaderBoard /> */}
     </HomeContainer>
   );
