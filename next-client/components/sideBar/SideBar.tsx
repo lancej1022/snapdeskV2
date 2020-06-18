@@ -10,10 +10,22 @@ const SideBarContainer = styled.section`
   background-color: ${({ theme }) => theme.colorDark};
   padding: 2rem;
   color: white;
+  text-align: center;
 
-  h2 {
+  h2,
+  h3 {
     color: ${({ theme }) => theme.colorLight};
     font-size: 3.5rem;
+  }
+`;
+
+const RankingContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  place-items: center;
+
+  p {
+    color: ${({ theme }) => theme.textWhite};
   }
 `;
 
@@ -37,6 +49,14 @@ const SideBar: React.FC = () => {
       <h2>SnapDesk</h2>
       {/* Show some profile stuff here */}
       <Button onClick={handleLogout}>logout</Button>
+      <h3>Active Tickets</h3>
+      <h4>12</h4>
+      <h3>LeaderBoard</h3>
+      <RankingContainer>
+        <p>Ranking</p>
+        <p>Mentor Name</p>
+        <p>Snaps Earned</p>
+      </RankingContainer>
     </SideBarContainer>
   );
 };

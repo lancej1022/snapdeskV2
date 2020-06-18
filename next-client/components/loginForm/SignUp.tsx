@@ -8,7 +8,6 @@ import {
 import { useRouter } from 'next/router';
 import * as Yup from 'yup';
 import { Formik, Field } from 'formik';
-import ReCAPTCHA from 'react-google-recaptcha';
 
 import Button from '../button';
 import { setAccessToken } from '../../lib/accessToken';
@@ -46,8 +45,6 @@ const SignUpForm = styled.form`
   }
 `;
 
-const recaptchaRef: React.RefObject<ReCAPTCHA> = React.createRef();
-
 /////
 // Formik
 /////
@@ -73,7 +70,6 @@ interface SignUpProps {
 const SignUp: React.FC<SignUpProps> = ({ isLoggedIn = false }) => {
   const [register] = useRegisterMutation();
   const [login] = useLoginMutation();
-  const [recaptchaToken, setToken] = useState('');
   // const [findMe] = useMeQuery();
   const router = useRouter();
 
@@ -100,7 +96,7 @@ const SignUp: React.FC<SignUpProps> = ({ isLoggedIn = false }) => {
         });
 
         if (response && response.data && response.data.login) {
-          console.log(response.data.login.accessToken);
+          // console.log(response.data.login.accessToken);
           setAccessToken(response.data.login.accessToken);
         }
         router.push('/home');
@@ -153,10 +149,6 @@ const SignUp: React.FC<SignUpProps> = ({ isLoggedIn = false }) => {
       router.push('/home');
     }
   };
-
-  useEffect(() => {
-    recaptchaRef.current && recaptchaRef.current.reset();
-  }, []);
 
   return (
     <>

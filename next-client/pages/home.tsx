@@ -6,10 +6,11 @@ import { useByeQuery } from '../generated/apolloComponents';
 
 import SideBar from '../components/sideBar';
 import LeaderBoard from '../components/leaderBoard';
+import TicketCreator from '../components/ticketCreator';
 
 const HomeContainer = styled.main`
   display: grid;
-  grid-template-columns: 1fr 3fr 1fr;
+  grid-template-columns: 1fr 4fr;
   height: 100vh;
 `;
 
@@ -23,7 +24,6 @@ const Home = () => {
     router.push('/');
   }
   if (!data) return <div>no data...</div>;
-  console.log(data);
 
   return (
     <HomeContainer>
@@ -31,8 +31,9 @@ const Home = () => {
       <div>
         hello
         <div>{data.bye}</div>
+        <TicketCreator />
       </div>
-      <LeaderBoard />
+      {/* <LeaderBoard /> */}
     </HomeContainer>
   );
 };
