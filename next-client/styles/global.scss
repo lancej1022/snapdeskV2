@@ -13,8 +13,6 @@ html {
 body {
   margin: 0;
   font-size: 1.6rem;
-  /* attempt to achieve FOIT instead of FOUT */
-  font-display: block;
   font-family: 'Poppins', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -23,4 +21,9 @@ body {
 p {
   line-height: 2.6rem;
   color: #000000;
+}
+
+.fill {
+  fill: #0061ff;
+  stroke: #0061ff;
 }

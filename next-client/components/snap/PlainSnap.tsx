@@ -1,15 +1,12 @@
 import React from 'react';
 
 interface Props {
-  idStyle: string;
-  updateRating: (target: any) => void;
-  index: number;
+  styleName: string;
 }
-
-const Snap: React.FC<Props> = ({ idStyle, updateRating, index }) => (
-  <div className="snap-rating" onClick={() => updateRating(index)}>
+const PlainSnap: React.FC<Props> = ({ styleName }) => (
+  <div>
     <svg
-      className={idStyle}
+      className={styleName}
       xmlns="http://www.w3.org/2000/svg"
       width="32"
       height="32"
@@ -39,4 +36,4 @@ const Snap: React.FC<Props> = ({ idStyle, updateRating, index }) => (
   </div>
 );
 
-export default Snap;
+export default PlainSnap;
