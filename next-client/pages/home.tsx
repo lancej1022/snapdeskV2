@@ -18,23 +18,10 @@ const Home = () => {
   // const { data, loading, error } = useByeQuery();
   const router = useRouter();
 
-  // if (loading) return <div>loading...</div>;
-  // if (error) {
-  //   window.alert('Your session has timed out');
-  //   router.push('/');
-  // }
-  // if (!data) return <div>no data...</div>;
-
   return (
     <HomeContainer>
       <SideBar />
-      {/* <div>
-        hello
-        <div>{data.bye}</div>
-        <TicketCreator />
-      </div> */}
       <FeedContainer />
-      {/* <LeaderBoard /> */}
     </HomeContainer>
   );
 };
