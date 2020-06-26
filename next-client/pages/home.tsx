@@ -2,8 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
 
-import { useByeQuery } from '../generated/apolloComponents';
-
 import SideBar from '../components/sideBar';
 import FeedContainer from '../components/feedContainer';
 import TicketCreator from '../components/ticketCreator';
